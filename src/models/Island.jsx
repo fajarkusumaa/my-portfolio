@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unknown-property */
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 
 import { useFrame, useThree } from "@react-three/fiber";
 import { a, useSpring } from "@react-spring/three";
@@ -48,11 +48,9 @@ const Island = ({
   };
 
   const { position: springPosition } = useSpring({
-    position: isRotating ? [0, 3, 8] : [0, 0, 5],
-    config: { mass: 1, tension: 200, friction: 400 },
+    position: isRotating ? [0, 2, 10] : [0, 0, 5],
+    config: { mass: 5, tension: 120, friction: 120 },
   });
-
-  // console.log(springPosition.animation.values[1]._value);
 
   const handlePointerMove = (event) => {
     // Handle pointer (mouse or touch) move event
@@ -76,6 +74,7 @@ const Island = ({
       rotationSpeed.current = delta * 0.01 * Math.PI;
 
       // Camera movement
+
       // Camera movement with rounded values
       const roundedX =
         Math.round(springPosition.animation.values[1]._value * 1000) / 1000;

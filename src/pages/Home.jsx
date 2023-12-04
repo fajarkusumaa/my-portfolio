@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import { useState, Suspense } from "react";
-import Loader from "../components/Loader";
+import Loader from "../components/Loader.jsx";
 
 import Island from "../models/Island.jsx";
 import Sky from "../models/Sky.jsx";
@@ -10,8 +10,6 @@ import HomeInfo from "../components/HomeInfo";
 const Home = () => {
   const [isRotating, setIsRotating] = useState();
   const [currentStage, setCurrentStage] = useState(1);
-
-  console.log(currentStage);
 
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
@@ -50,13 +48,8 @@ const Home = () => {
     <section className="relative h-screen w-screen">
       <HomeInfo currentStage={currentStage} />
 
-      <Canvas
-        // className={`h-screen w-full bg-transparent ${
-        //   isRotating ? "cursor-grabbing" : "cursor-grab"
-        // }`}
-        camera={{ near: 0.1, far: 1000 }}
-      >
-        <Suspense fallback={<Loader />}>
+      <Canvas camera={{ near: 0.1, far: 1000 }}>
+        <Suspense fallback={<Loader isRotating={isRotating} />}>
           <directionalLight position={[1, 1, 0.5]} intensity={2} />
           <ambientLight intensity={0.6} />
           <hemisphereLight

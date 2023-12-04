@@ -1,5 +1,5 @@
-import { Canvas } from "@react-three/fiber";
-import { useState, Suspense } from "react";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
+import { useState, Suspense, useEffect, useRef } from "react";
 import Loader from "../components/Loader.jsx";
 
 import Island from "../models/Island.jsx";
@@ -7,8 +7,10 @@ import Sky from "../models/Sky.jsx";
 import { Plane } from "../models/Plane.jsx";
 import HomeInfo from "../components/HomeInfo";
 
+import * as THREE from "three";
+
 const Home = () => {
-  const [isRotating, setIsRotating] = useState();
+  const [isRotating, setIsRotating] = useState(false);
   const [currentStage, setCurrentStage] = useState(1);
 
   const adjustIslandForScreenSize = () => {
@@ -44,11 +46,17 @@ const Home = () => {
 
   const [planeScale, planePosition] = adjustPlaneForScreenSize();
 
+  // --------------
+
   return (
     <section className="relative h-screen w-screen">
       <HomeInfo currentStage={currentStage} />
-
-      <Canvas camera={{ near: 0.1, far: 1000 }}>
+      <Canvas
+        camera={{
+          near: 1,
+          far: 1000,
+        }}
+      >
         <Suspense fallback={<Loader isRotating={isRotating} />}>
           <directionalLight position={[1, 1, 0.5]} intensity={2} />
           <ambientLight intensity={0.6} />

@@ -5,7 +5,7 @@ import { Home, About, Project } from "./pages";
 
 export const App = () => {
   return (
-    <main className="">
+    <main>
       <Router>
         <Navbar className="" />
         <Routes>

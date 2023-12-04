@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 
 const Navbar = () => {
   return (
-    <header className="absolute top-4 z-10 flex w-full items-center justify-between  px-16">
+    <header className="absolute z-10 flex w-full items-center justify-between  p-6">
       <NavLink
         to="/"
         className="flex items-center justify-center rounded-lg bg-white "
@@ -11,7 +11,7 @@ const Navbar = () => {
           FK
         </span>
       </NavLink>
-      <nav className="flex gap-3">
+      <nav className="flex gap-4">
         <NavLink to="/About">About</NavLink>
         <NavLink to="/Project">Project</NavLink>
       </nav>

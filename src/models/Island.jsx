@@ -2,7 +2,7 @@
 import { useRef, useEffect } from "react";
 
 import { useFrame, useThree } from "@react-three/fiber";
-import { a } from "@react-spring/three";
+import { a, useSpring } from "@react-spring/three";
 
 import islandScene from "../assets/3d/island.glb";
 import { useGLTF } from "@react-three/drei";
@@ -12,6 +12,7 @@ const Island = ({
   setIsRotating,
   setCurrentStage,
   currentFocusPoint,
+  cameraRef,
   ...props
 }) => {
   const islandRef = useRef();
@@ -23,33 +24,43 @@ const Island = ({
   const rotationSpeed = useRef(0);
   const dampingFactor = 0.92;
 
+  const { camera } = useThree();
+
   // Handle pointer (mouse or touch) down event
-  const handlePointerDown = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  // Handle pointer (mouse or touch) down event
+  const handlePointerDown = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
     setIsRotating(true);
 
     // Calculate the clientX based on whether it's a touch event or a mouse event
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientX = event.touches ? event.touches[0].clientX : event.clientX;
 
     // Store the current clientX position for reference
     lastX.current = clientX;
   };
 
   // Handle pointer (mouse or touch) up event
-  const handlePointerUp = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const handlePointerUp = (event) => {
+    event.stopPropagation();
+    event.preventDefault();
     setIsRotating(false);
   };
 
-  const handlePointerMove = (e) => {
-    e.stopPropagation();
-    e.preventDefault();
+  const { position: springPosition } = useSpring({
+    position: isRotating ? [0, 3, 8] : [0, 0, 5],
+    config: { mass: 1, tension: 200, friction: 400 },
+  });
 
+  // console.log(springPosition.animation.values[1]._value);
+
+  const handlePointerMove = (event) => {
+    // Handle pointer (mouse or touch) move event
+    event.stopPropagation();
+    event.preventDefault();
     if (isRotating) {
       // If rotation is enabled, calculate the change in clientX position
-      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientX = event.touches ? event.touches[0].clientX : event.clientX;
 
       // calculate the change in the horizontal position of the mouse cursor or touch input,
       // relative to the viewport's width
@@ -63,6 +74,21 @@ const Island = ({
 
       // Update the rotation speed
       rotationSpeed.current = delta * 0.01 * Math.PI;
+
+      // Camera movement
+      // Camera movement with rounded values
+      const roundedX =
+        Math.round(springPosition.animation.values[1]._value * 1000) / 1000;
+      const roundedZ =
+        Math.round(springPosition.animation.values[2]._value * 1000) / 1000;
+      camera.position.set(0, roundedX, roundedZ);
+    } else {
+      // Camera movement with rounded values
+      const roundedX =
+        Math.round(springPosition.animation.values[1]._value * 1000) / 1000;
+      const roundedZ =
+        Math.round(springPosition.animation.values[2]._value * 1000) / 1000;
+      camera.position.set(0, roundedX, roundedZ);
     }
   };
 
@@ -117,38 +143,38 @@ const Island = ({
     }
   });
 
-  useEffect(() => {
-    setIsRotating(true);
+  // useEffect(() => {
+  //   setIsRotating(true);
 
-    const rotateIsland = () => {
-      islandRef.current.rotation.y -= 0.001 * Math.PI;
+  //   const rotateIsland = () => {
+  //     islandRef.current.rotation.y -= 0.001 * Math.PI;
 
-      const normalizedRotation =
-        ((islandRef.current.rotation.y % (2 * Math.PI)) + 2 * Math.PI) %
-        (2 * Math.PI);
+  //     const normalizedRotation =
+  //       ((islandRef.current.rotation.y % (2 * Math.PI)) + 2 * Math.PI) %
+  //       (2 * Math.PI);
 
-      switch (true) {
-        case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
-          setCurrentStage(4);
-          break;
-        case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
-          setCurrentStage(3);
-          break;
-        case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
-          setCurrentStage(2);
-          break;
-        case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
-          setCurrentStage(1);
-          break;
-        default:
-          setCurrentStage(null);
-      }
+  //     switch (true) {
+  //       case normalizedRotation >= 5.45 && normalizedRotation <= 5.85:
+  //         setCurrentStage(4);
+  //         break;
+  //       case normalizedRotation >= 0.85 && normalizedRotation <= 1.3:
+  //         setCurrentStage(3);
+  //         break;
+  //       case normalizedRotation >= 2.4 && normalizedRotation <= 2.6:
+  //         setCurrentStage(2);
+  //         break;
+  //       case normalizedRotation >= 4.25 && normalizedRotation <= 4.75:
+  //         setCurrentStage(1);
+  //         break;
+  //       default:
+  //         setCurrentStage(null);
+  //     }
 
-      requestAnimationFrame(rotateIsland);
-    };
+  //     requestAnimationFrame(rotateIsland);
+  //   };
 
-    rotateIsland(); // Start the auto-rotation
-  }, [islandRef, setCurrentStage]);
+  //   rotateIsland(); // Start the auto-rotation
+  // }, [islandRef, setCurrentStage]);
 
   useEffect(() => {
     // Add event listeners for pointer and keyboard events
@@ -171,6 +197,7 @@ const Island = ({
 
   return (
     // {Island 3D model from: https://sketchfab.com/3d-models/foxs-islands-163b68e09fcc47618450150be7785907}
+
     <a.group ref={islandRef} {...props}>
       <mesh
         geometry={nodes.polySurface944_tree_body_0.geometry}

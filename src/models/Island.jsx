@@ -40,17 +40,16 @@ const Island = ({
     lastX.current = clientX;
   };
 
+  const { position: springPosition } = useSpring({
+    position: isRotating ? [0, 2, 10] : [0, 0, 5],
+    config: { mass: 5, tension: 120, friction: 120 },
+  });
   // Handle pointer (mouse or touch) up event
   const handlePointerUp = (event) => {
     event.stopPropagation();
     event.preventDefault();
     setIsRotating(false);
   };
-
-  const { position: springPosition } = useSpring({
-    position: isRotating ? [0, 2, 10] : [0, 0, 5],
-    config: { mass: 5, tension: 120, friction: 120 },
-  });
 
   const handlePointerMove = (event) => {
     // Handle pointer (mouse or touch) move event
@@ -223,6 +222,7 @@ const Island = ({
         material={materials.PaletteMaterial001}
       />
       <mesh
+        color={"pink"}
         geometry={nodes.pCube11_rocks1_0.geometry}
         material={materials.PaletteMaterial001}
       />
